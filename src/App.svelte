@@ -66,7 +66,6 @@
 
   function handleHistoryLoad(state) {
     gridStore.set(state);
-    historyOpen = false;
   }
 
   function getFilterCSS(filter) {
@@ -287,7 +286,7 @@
       {/if}
     </div>
     <div class="header-right">
-      <button class="history-btn" onclick={() => historyOpen = true} title={tr('historyBtn')}>
+      <button class="history-btn" class:active={historyOpen} onclick={() => historyOpen = !historyOpen} title={tr('historyBtn')}>
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
         </svg>
@@ -314,6 +313,12 @@
       class:resizing={isResizing}
     ></div>
     <ImageCanvas onImageAdd={handleImageAdd} />
+    {#if historyOpen}
+      <HistoryPanel
+        onLoad={handleHistoryLoad}
+        onClose={() => historyOpen = false}
+      />
+    {/if}
   </div>
 
   <footer class="footer">
@@ -338,13 +343,6 @@
       imageSrc={store.imageSrc}
       onApply={handleCropApply}
       onCancel={handleCropCancel}
-    />
-  {/if}
-
-  {#if historyOpen}
-    <HistoryPanel
-      onLoad={handleHistoryLoad}
-      onClose={() => historyOpen = false}
     />
   {/if}
 
@@ -488,8 +486,9 @@
     font-weight: 600;
     position: relative;
   }
-  .history-btn:hover {
-    background: var(--bg-hover);
+  .history-btn:hover,
+  .history-btn.active {
+    background: var(--accent-light);
     border-color: var(--accent);
     color: var(--accent);
   }
