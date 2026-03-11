@@ -2,15 +2,19 @@
   import { onMount } from 'svelte';
   import { gridStore, theme } from './stores/gridStore.js';
   import { t, locale } from './stores/i18n.js';
+  import { historyStore, historyCount } from './stores/historyStore.js';
   import ThemeToggle from './components/ThemeToggle.svelte';
   import LanguageSelector from './components/LanguageSelector.svelte';
   import Sidebar from './components/Sidebar.svelte';
   import ImageCanvas from './components/ImageCanvas.svelte';
   import CropModal from './components/CropModal.svelte';
+  import HistoryPanel from './components/HistoryPanel.svelte';
 
   let store = $derived($gridStore);
   let tr = $derived($t);
+  let hCount = $derived($historyCount);
   let cropOpen = $state(false);
+  let historyOpen = $state(false);
   let sidebarWidth = $state(272);
   let isResizing = $state(false);
 
@@ -56,6 +60,15 @@
     cropOpen = false;
   }
 
+  async function handleSaveHistory() {
+    await historyStore.save(store);
+  }
+
+  function handleHistoryLoad(state) {
+    gridStore.set(state);
+    historyOpen = false;
+  }
+
   function getFilterCSS(filter) {
     switch (filter) {
       case 'grayscale': return 'grayscale(100%)';
@@ -92,6 +105,12 @@
       if (filterCSS) ctx.filter = filterCSS;
       ctx.drawImage(img, 0, 0, w, h);
       ctx.filter = 'none';
+    } else {
+      // Grid-only mode: fill with background color (or keep transparent for PNG)
+      if (format === 'jpeg' || store.exportBgColor !== '#ffffff') {
+        ctx.fillStyle = store.exportBgColor;
+        ctx.fillRect(0, 0, w, h);
+      }
     }
 
     ctx.strokeStyle = store.lineColor;
@@ -206,6 +225,15 @@
       {/if}
     </div>
     <div class="header-right">
+      <button class="history-btn" onclick={() => historyOpen = true} title={tr('historyBtn')}>
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+        </svg>
+        <span class="history-btn-label">{tr('historyBtn')}</span>
+        {#if hCount > 0}
+          <span class="history-badge">{hCount}</span>
+        {/if}
+      </button>
       <div class="kbd-hint">
         <kbd>Ctrl</kbd><span>+</span><kbd>V</kbd>
         <span class="kbd-label">{tr('paste')}</span>
@@ -248,6 +276,13 @@
       imageSrc={store.imageSrc}
       onApply={handleCropApply}
       onCancel={handleCropCancel}
+    />
+  {/if}
+
+  {#if historyOpen}
+    <HistoryPanel
+      onLoad={handleHistoryLoad}
+      onClose={() => historyOpen = false}
     />
   {/if}
 
@@ -378,6 +413,42 @@
     letter-spacing: 0.5px;
   }
 
+  .history-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 10px;
+    border-radius: 8px;
+    background: var(--bg-tertiary);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-color);
+    font-size: 11px;
+    font-weight: 600;
+    position: relative;
+  }
+  .history-btn:hover {
+    background: var(--bg-hover);
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .history-btn-label {
+    font-family: var(--font-body);
+  }
+  .history-badge {
+    font-size: 9px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    min-width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: var(--accent);
+    color: white;
+    padding: 0 4px;
+  }
+
   .kbd-hint {
     display: flex;
     align-items: center;
@@ -493,6 +564,7 @@
     .logo-mark svg { width: 28px; height: 28px; }
     .badge { display: none; }
     .kbd-hint { display: none; }
+    .history-btn-label { display: none; }
     .header-center { display: none; }
     .main { flex-direction: column; }
     .sidebar-resizer { display: none; }

@@ -1,10 +1,18 @@
 <script>
   import { gridStore } from '../stores/gridStore.js';
+  import { historyStore } from '../stores/historyStore.js';
   import { t } from '../stores/i18n.js';
 
   let store = $derived($gridStore);
   let tr = $derived($t);
-  let { onCrop, onExport, sidebarWidth = $bindable(272) } = $props();
+  let { onCrop, onExport, onHistory, sidebarWidth = $bindable(272) } = $props();
+  let saveFlash = $state(false);
+
+  async function handleSave() {
+    await historyStore.save(store);
+    saveFlash = true;
+    setTimeout(() => { saveFlash = false; }, 1200);
+  }
 
   let sections = $state({
     grid: true,
@@ -402,6 +410,20 @@
                 {tr('downloadJpeg')}
               </button>
             </div>
+
+            <button
+              class="btn btn-ghost full save-history-btn"
+              class:saved={saveFlash}
+              onclick={handleSave}
+              disabled={!store.croppedSrc}
+            >
+              {#if saveFlash}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              {:else}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              {/if}
+              {tr('historySave')}
+            </button>
           </div>
         </div>
       </div>
@@ -722,6 +744,15 @@
   }
 
   .export-buttons { display: flex; flex-direction: column; gap: 6px; }
+  .save-history-btn {
+    margin-top: 2px;
+    border-style: dashed;
+  }
+  .save-history-btn.saved {
+    border-color: var(--success);
+    color: var(--success);
+    border-style: solid;
+  }
   .full { width: 100%; justify-content: center; }
 
   .sidebar-footer {
