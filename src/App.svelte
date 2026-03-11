@@ -134,16 +134,25 @@
       ctx.globalAlpha = 0.85;
       ctx.fillStyle = store.numberColor;
       ctx.font = `600 ${store.numberSize * scale}px 'JetBrains Mono', monospace`;
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
       ctx.strokeStyle = store.exportGridOnly ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.3)';
       ctx.lineWidth = 3 * scale;
+
+      const pad = 0.08;
+      let xOff = 0.5, yOff = 0.5;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      switch (store.numberPosition) {
+        case 'top-left': xOff = pad; yOff = pad; ctx.textAlign = 'left'; ctx.textBaseline = 'top'; break;
+        case 'top-right': xOff = 1 - pad; yOff = pad; ctx.textAlign = 'right'; ctx.textBaseline = 'top'; break;
+        case 'bottom-left': xOff = pad; yOff = 1 - pad; ctx.textAlign = 'left'; ctx.textBaseline = 'bottom'; break;
+        case 'bottom-right': xOff = 1 - pad; yOff = 1 - pad; ctx.textAlign = 'right'; ctx.textBaseline = 'bottom'; break;
+      }
 
       let n = 1;
       for (let r = 0; r < store.rows; r++) {
         for (let c = 0; c < store.cols; c++) {
-          const x = ((c + 0.5) / store.cols) * w;
-          const y = ((r + 0.5) / store.rows) * h;
+          const x = ((c + xOff) / store.cols) * w;
+          const y = ((r + yOff) / store.rows) * h;
           ctx.strokeText(String(n), x, y);
           ctx.fillText(String(n), x, y);
           n++;

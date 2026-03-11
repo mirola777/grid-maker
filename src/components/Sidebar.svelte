@@ -28,9 +28,9 @@
   ];
 
   const colorPresets = [
-    '#ff3366', '#f97316', '#f59e0b', '#10b981',
-    '#06b6d4', '#6366f1', '#8b5cf6', '#ec4899',
-    '#ffffff', '#000000',
+    '#000000', '#333333', '#666666', '#ff3366',
+    '#f97316', '#f59e0b', '#10b981', '#06b6d4',
+    '#6366f1', '#ffffff',
   ];
 
   const filters = [
@@ -55,6 +55,22 @@
     brightness: 'filterBrightness',
     warm: 'filterWarm',
     cool: 'filterCool',
+  };
+
+  const numberPositions = [
+    { value: 'center', icon: '◉' },
+    { value: 'top-left', icon: '◸' },
+    { value: 'top-right', icon: '◹' },
+    { value: 'bottom-left', icon: '◺' },
+    { value: 'bottom-right', icon: '◿' },
+  ];
+
+  const positionKeys = {
+    center: 'posCenter',
+    'top-left': 'posTopLeft',
+    'top-right': 'posTopRight',
+    'bottom-left': 'posBottomLeft',
+    'bottom-right': 'posBottomRight',
   };
 </script>
 
@@ -90,34 +106,36 @@
         <svg class="chevron" class:open={sections.grid} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
       <div class="section-content" class:open={sections.grid}>
-        <div class="section-body">
-          <div class="presets-row">
-            {#each presets as p}
-              <button
-                class="preset-chip"
-                class:active={store.rows === p.rows && store.cols === p.cols}
-                onclick={() => gridStore.update(s => ({...s, rows: p.rows, cols: p.cols}))}
-              >{p.label}</button>
-            {/each}
-          </div>
-
-          <div class="field-row">
-            <div class="field">
-              <span class="field-label">{tr('rows')}</span>
-              <div class="stepper">
-                <button class="step-btn" onclick={() => gridStore.update(s => ({...s, rows: Math.max(1, s.rows - 1)}))}>-</button>
-                <input type="number" min="1" max="50" value={store.rows}
-                  oninput={(e) => gridStore.update(s => ({...s, rows: Math.min(50, Math.max(1, +e.target.value || 1))}))} />
-                <button class="step-btn" onclick={() => gridStore.update(s => ({...s, rows: Math.min(50, s.rows + 1)}))}>+</button>
-              </div>
+        <div class="section-inner">
+          <div class="section-body">
+            <div class="presets-row">
+              {#each presets as p}
+                <button
+                  class="preset-chip"
+                  class:active={store.rows === p.rows && store.cols === p.cols}
+                  onclick={() => gridStore.update(s => ({...s, rows: p.rows, cols: p.cols}))}
+                >{p.label}</button>
+              {/each}
             </div>
-            <div class="field">
-              <span class="field-label">{tr('cols')}</span>
-              <div class="stepper">
-                <button class="step-btn" onclick={() => gridStore.update(s => ({...s, cols: Math.max(1, s.cols - 1)}))}>-</button>
-                <input type="number" min="1" max="50" value={store.cols}
-                  oninput={(e) => gridStore.update(s => ({...s, cols: Math.min(50, Math.max(1, +e.target.value || 1))}))} />
-                <button class="step-btn" onclick={() => gridStore.update(s => ({...s, cols: Math.min(50, s.cols + 1)}))}>+</button>
+
+            <div class="field-row">
+              <div class="field">
+                <span class="field-label">{tr('rows')}</span>
+                <div class="stepper">
+                  <button class="step-btn" onclick={() => gridStore.update(s => ({...s, rows: Math.max(1, s.rows - 1)}))}>-</button>
+                  <input type="number" min="1" max="50" value={store.rows}
+                    oninput={(e) => gridStore.update(s => ({...s, rows: Math.min(50, Math.max(1, +e.target.value || 1))}))} />
+                  <button class="step-btn" onclick={() => gridStore.update(s => ({...s, rows: Math.min(50, s.rows + 1)}))}>+</button>
+                </div>
+              </div>
+              <div class="field">
+                <span class="field-label">{tr('cols')}</span>
+                <div class="stepper">
+                  <button class="step-btn" onclick={() => gridStore.update(s => ({...s, cols: Math.max(1, s.cols - 1)}))}>-</button>
+                  <input type="number" min="1" max="50" value={store.cols}
+                    oninput={(e) => gridStore.update(s => ({...s, cols: Math.min(50, Math.max(1, +e.target.value || 1))}))} />
+                  <button class="step-btn" onclick={() => gridStore.update(s => ({...s, cols: Math.min(50, s.cols + 1)}))}>+</button>
+                </div>
               </div>
             </div>
           </div>
@@ -136,58 +154,60 @@
         <svg class="chevron" class:open={sections.style} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
       <div class="section-content" class:open={sections.style}>
-        <div class="section-body">
-          <div class="field">
-            <span class="field-label">{tr('quickColors')}</span>
-            <div class="color-swatches">
-              {#each colorPresets as color}
-                <button
-                  class="swatch"
-                  class:active={store.lineColor === color}
-                  style="background: {color}; {color === '#ffffff' ? 'border: 1px solid var(--border-color)' : ''}"
-                  onclick={() => gridStore.update(s => ({...s, lineColor: color}))}
-                  title={color}
-                ></button>
-              {/each}
-            </div>
-            <div class="color-custom-row">
-              <span class="field-label-sm">{tr('custom')}</span>
-              <div class="color-custom-picker">
-                <input type="color" value={store.lineColor}
-                  oninput={(e) => gridStore.update(s => ({...s, lineColor: e.target.value}))} />
-                <span class="color-hex">{store.lineColor}</span>
+        <div class="section-inner">
+          <div class="section-body">
+            <div class="field">
+              <span class="field-label">{tr('quickColors')}</span>
+              <div class="color-swatches">
+                {#each colorPresets as color}
+                  <button
+                    class="swatch"
+                    class:active={store.lineColor === color}
+                    style="background: {color}; {color === '#ffffff' ? 'border: 1px solid var(--border-color)' : ''}"
+                    onclick={() => gridStore.update(s => ({...s, lineColor: color}))}
+                    title={color}
+                  ></button>
+                {/each}
+              </div>
+              <div class="color-custom-row">
+                <span class="field-label-sm">{tr('custom')}</span>
+                <div class="color-custom-picker">
+                  <input type="color" value={store.lineColor}
+                    oninput={(e) => gridStore.update(s => ({...s, lineColor: e.target.value}))} />
+                  <span class="color-hex">{store.lineColor}</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="field">
-            <div class="field-label-row">
-              <span class="field-label">{tr('thickness')}</span>
-              <span class="field-value">{store.lineWidth}px</span>
+            <div class="field">
+              <div class="field-label-row">
+                <span class="field-label">{tr('thickness')}</span>
+                <span class="field-value">{store.lineWidth}px</span>
+              </div>
+              <input type="range" min="0.3" max="10" step="0.1" value={store.lineWidth}
+                oninput={(e) => gridStore.update(s => ({...s, lineWidth: +e.target.value}))} />
             </div>
-            <input type="range" min="0.5" max="10" step="0.5" value={store.lineWidth}
-              oninput={(e) => gridStore.update(s => ({...s, lineWidth: +e.target.value}))} />
-          </div>
 
-          <div class="field">
-            <div class="field-label-row">
-              <span class="field-label">{tr('opacity')}</span>
-              <span class="field-value">{Math.round(store.lineOpacity * 100)}%</span>
+            <div class="field">
+              <div class="field-label-row">
+                <span class="field-label">{tr('opacity')}</span>
+                <span class="field-value">{Math.round(store.lineOpacity * 100)}%</span>
+              </div>
+              <input type="range" min="0.05" max="1" step="0.05" value={store.lineOpacity}
+                oninput={(e) => gridStore.update(s => ({...s, lineOpacity: +e.target.value}))} />
             </div>
-            <input type="range" min="0.05" max="1" step="0.05" value={store.lineOpacity}
-              oninput={(e) => gridStore.update(s => ({...s, lineOpacity: +e.target.value}))} />
-          </div>
 
-          <div class="field">
-            <span class="field-label">{tr('style')}</span>
-            <div class="style-chips">
-              {#each ['solid', 'dashed', 'dotted'] as style}
-                <button
-                  class="preset-chip"
-                  class:active={store.lineStyle === style}
-                  onclick={() => gridStore.update(s => ({...s, lineStyle: style}))}
-                >{tr(style)}</button>
-              {/each}
+            <div class="field">
+              <span class="field-label">{tr('style')}</span>
+              <div class="style-chips">
+                {#each ['solid', 'dashed', 'dotted'] as style}
+                  <button
+                    class="preset-chip"
+                    class:active={store.lineStyle === style}
+                    onclick={() => gridStore.update(s => ({...s, lineStyle: style}))}
+                  >{tr(style)}</button>
+                {/each}
+              </div>
             </div>
           </div>
         </div>
@@ -227,49 +247,65 @@
         <svg class="chevron" class:open={sections.extras} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
       <div class="section-content" class:open={sections.extras}>
-        <div class="section-body">
-          <label class="toggle-field">
-            <span>{tr('showCellNumbers')}</span>
-            <span class="toggle-switch" class:active={store.showNumbers}>
-              <input type="checkbox" checked={store.showNumbers}
-                onchange={(e) => gridStore.update(s => ({...s, showNumbers: e.target.checked}))} />
-              <span class="toggle-track"><span class="toggle-thumb"></span></span>
-            </span>
-          </label>
+        <div class="section-inner">
+          <div class="section-body">
+            <label class="toggle-field">
+              <span>{tr('showCellNumbers')}</span>
+              <span class="toggle-switch" class:active={store.showNumbers}>
+                <input type="checkbox" checked={store.showNumbers}
+                  onchange={(e) => gridStore.update(s => ({...s, showNumbers: e.target.checked}))} />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </span>
+            </label>
 
-          <label class="toggle-field">
-            <span>{tr('centerCrosshair')}</span>
-            <span class="toggle-switch" class:active={store.showCenter}>
-              <input type="checkbox" checked={store.showCenter}
-                onchange={(e) => gridStore.update(s => ({...s, showCenter: e.target.checked}))} />
-              <span class="toggle-track"><span class="toggle-thumb"></span></span>
-            </span>
-          </label>
+            <label class="toggle-field">
+              <span>{tr('centerCrosshair')}</span>
+              <span class="toggle-switch" class:active={store.showCenter}>
+                <input type="checkbox" checked={store.showCenter}
+                  onchange={(e) => gridStore.update(s => ({...s, showCenter: e.target.checked}))} />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </span>
+            </label>
 
-          <label class="toggle-field">
-            <span>{tr('diagonals')}</span>
-            <span class="toggle-switch" class:active={store.showDiagonals}>
-              <input type="checkbox" checked={store.showDiagonals}
-                onchange={(e) => gridStore.update(s => ({...s, showDiagonals: e.target.checked}))} />
-              <span class="toggle-track"><span class="toggle-thumb"></span></span>
-            </span>
-          </label>
+            <label class="toggle-field">
+              <span>{tr('diagonals')}</span>
+              <span class="toggle-switch" class:active={store.showDiagonals}>
+                <input type="checkbox" checked={store.showDiagonals}
+                  onchange={(e) => gridStore.update(s => ({...s, showDiagonals: e.target.checked}))} />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </span>
+            </label>
 
-          {#if store.showNumbers}
-            <div class="color-field">
-              <span class="field-label">{tr('numberColor')}</span>
-              <input type="color" value={store.numberColor}
-                oninput={(e) => gridStore.update(s => ({...s, numberColor: e.target.value}))} />
-            </div>
-            <div class="field">
-              <div class="field-label-row">
-                <span class="field-label">{tr('numberSize')}</span>
-                <span class="field-value">{store.numberSize}px</span>
+            {#if store.showNumbers}
+              <div class="field">
+                <span class="field-label">{tr('numberPosition')}</span>
+                <div class="style-chips">
+                  {#each numberPositions as pos}
+                    <button
+                      class="preset-chip"
+                      class:active={store.numberPosition === pos.value}
+                      onclick={() => gridStore.update(s => ({...s, numberPosition: pos.value}))}
+                      title={tr(positionKeys[pos.value])}
+                    ><span class="pos-icon">{pos.icon}</span> {tr(positionKeys[pos.value])}</button>
+                  {/each}
+                </div>
               </div>
-              <input type="range" min="8" max="36" step="1" value={store.numberSize}
-                oninput={(e) => gridStore.update(s => ({...s, numberSize: +e.target.value}))} />
-            </div>
-          {/if}
+
+              <div class="color-field">
+                <span class="field-label">{tr('numberColor')}</span>
+                <input type="color" value={store.numberColor}
+                  oninput={(e) => gridStore.update(s => ({...s, numberColor: e.target.value}))} />
+              </div>
+              <div class="field">
+                <div class="field-label-row">
+                  <span class="field-label">{tr('numberSize')}</span>
+                  <span class="field-value">{store.numberSize}px</span>
+                </div>
+                <input type="range" min="8" max="36" step="1" value={store.numberSize}
+                  oninput={(e) => gridStore.update(s => ({...s, numberSize: +e.target.value}))} />
+              </div>
+            {/if}
+          </div>
         </div>
       </div>
     </section>
@@ -285,18 +321,20 @@
         <svg class="chevron" class:open={sections.filters} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
       <div class="section-content" class:open={sections.filters}>
-        <div class="section-body">
-          <div class="filter-grid">
-            {#each filters as f}
-              <button
-                class="filter-chip"
-                class:active={store.filter === f.value}
-                onclick={() => gridStore.update(s => ({...s, filter: f.value}))}
-              >
-                <span class="filter-icon">{f.icon}</span>
-                <span class="filter-name">{tr(filterKeys[f.value])}</span>
-              </button>
-            {/each}
+        <div class="section-inner">
+          <div class="section-body">
+            <div class="filter-grid">
+              {#each filters as f}
+                <button
+                  class="filter-chip"
+                  class:active={store.filter === f.value}
+                  onclick={() => gridStore.update(s => ({...s, filter: f.value}))}
+                >
+                  <span class="filter-icon">{f.icon}</span>
+                  <span class="filter-name">{tr(filterKeys[f.value])}</span>
+                </button>
+              {/each}
+            </div>
           </div>
         </div>
       </div>
@@ -312,39 +350,58 @@
         <svg class="chevron" class:open={sections.export} width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
       <div class="section-content" class:open={sections.export}>
-        <div class="section-body">
-          <div class="field">
-            <span class="field-label">{tr('scale')}</span>
-            <div class="style-chips">
-              {#each [1, 2, 3] as scale}
-                <button
-                  class="preset-chip"
-                  class:active={store.exportScale === scale}
-                  onclick={() => gridStore.update(s => ({...s, exportScale: scale}))}
-                >{scale}x</button>
-              {/each}
+        <div class="section-inner">
+          <div class="section-body">
+            <div class="field">
+              <span class="field-label">{tr('scale')}</span>
+              <div class="style-chips">
+                {#each [1, 2, 3] as scale}
+                  <button
+                    class="preset-chip"
+                    class:active={store.exportScale === scale}
+                    onclick={() => gridStore.update(s => ({...s, exportScale: scale}))}
+                  >{scale}x</button>
+                {/each}
+              </div>
             </div>
-          </div>
 
-          {#if store.advancedMode}
-          <label class="toggle-field">
-            <span>{tr('gridOnly')}</span>
-            <span class="toggle-switch" class:active={store.exportGridOnly}>
-              <input type="checkbox" checked={store.exportGridOnly}
-                onchange={(e) => gridStore.update(s => ({...s, exportGridOnly: e.target.checked}))} />
-              <span class="toggle-track"><span class="toggle-thumb"></span></span>
-            </span>
-          </label>
-          {/if}
+            {#if store.advancedMode}
+            <label class="toggle-field">
+              <span>{tr('gridOnly')}</span>
+              <span class="toggle-switch" class:active={store.exportGridOnly}>
+                <input type="checkbox" checked={store.exportGridOnly}
+                  onchange={(e) => gridStore.update(s => ({...s, exportGridOnly: e.target.checked}))} />
+                <span class="toggle-track"><span class="toggle-thumb"></span></span>
+              </span>
+            </label>
 
-          <div class="export-buttons">
-            <button class="btn btn-primary full" onclick={() => onExport?.('png')} disabled={!store.croppedSrc}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              {tr('downloadPng')}
-            </button>
-            <button class="btn btn-ghost full" onclick={() => onExport?.('jpeg')} disabled={!store.croppedSrc}>
-              {tr('downloadJpeg')}
-            </button>
+            {#if store.exportGridOnly}
+              <div class="color-field">
+                <span class="field-label">{tr('bgColor')}</span>
+                <input type="color" value={store.exportBgColor}
+                  oninput={(e) => gridStore.update(s => ({...s, exportBgColor: e.target.value}))} />
+              </div>
+            {/if}
+
+            <div class="field">
+              <div class="field-label-row">
+                <span class="field-label">{tr('jpegQuality')}</span>
+                <span class="field-value">{store.exportQuality}%</span>
+              </div>
+              <input type="range" min="10" max="100" step="5" value={store.exportQuality}
+                oninput={(e) => gridStore.update(s => ({...s, exportQuality: +e.target.value}))} />
+            </div>
+            {/if}
+
+            <div class="export-buttons">
+              <button class="btn btn-primary full" onclick={() => onExport?.('png')} disabled={!store.croppedSrc}>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                {tr('downloadPng')}
+              </button>
+              <button class="btn btn-ghost full" onclick={() => onExport?.('jpeg')} disabled={!store.croppedSrc}>
+                {tr('downloadJpeg')}
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -353,6 +410,10 @@
 
   <!-- Bottom actions -->
   <div class="sidebar-footer">
+    <button class="btn btn-ghost full btn-sm reset-settings" onclick={() => gridStore.resetSettings()}>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+      {tr('resetAll')}
+    </button>
     {#if store.imageSrc}
       <button class="btn btn-ghost full btn-sm" onclick={() => onCrop?.()}>
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6.13 1L6 16a2 2 0 0 0 2 2h15"/><path d="M1 6.13L16 6a2 2 0 0 1 2 2v15"/></svg>
@@ -435,14 +496,13 @@
     display: grid;
     grid-template-rows: 0fr;
     transition: grid-template-rows 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden;
   }
   .section-content.open {
     grid-template-rows: 1fr;
   }
-  .section-content > .section-body {
-    min-height: 0;
+  .section-inner {
     overflow: hidden;
+    min-height: 0;
   }
 
   .section-body {
@@ -569,7 +629,9 @@
 
   .color-field { display: flex; align-items: center; justify-content: space-between; }
 
-  .style-chips { display: flex; gap: 4px; }
+  .style-chips { display: flex; gap: 4px; flex-wrap: wrap; }
+
+  .pos-icon { font-size: 11px; margin-right: 1px; }
 
   /* Toggle switch */
   .toggle-field {
@@ -669,6 +731,8 @@
     flex-direction: column;
     gap: 2px;
   }
+  .reset-settings { color: var(--text-muted); }
+  .reset-settings:hover { color: var(--accent); }
 
   /* Mobile: sidebar becomes bottom drawer */
   @media (max-width: 768px) {

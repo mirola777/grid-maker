@@ -128,15 +128,29 @@
     return lines.join('');
   });
 
+  function getNumberOffset(pos) {
+    const pad = 0.08; // 8% padding from edge
+    switch (pos) {
+      case 'top-left': return { xOff: pad, yOff: pad, anchor: 'start', baseline: 'hanging' };
+      case 'top-right': return { xOff: 1 - pad, yOff: pad, anchor: 'end', baseline: 'hanging' };
+      case 'bottom-left': return { xOff: pad, yOff: 1 - pad, anchor: 'start', baseline: 'auto' };
+      case 'bottom-right': return { xOff: 1 - pad, yOff: 1 - pad, anchor: 'end', baseline: 'auto' };
+      default: return { xOff: 0.5, yOff: 0.5, anchor: 'middle', baseline: 'central' };
+    }
+  }
+
+  let numberLayout = $derived(getNumberOffset(store.numberPosition));
+
   let cellNumbers = $derived.by(() => {
     if (!store.showNumbers || !store.croppedSrc) return [];
     const nums = [];
+    const { xOff, yOff } = numberLayout;
     let n = 1;
     for (let r = 0; r < store.rows; r++) {
       for (let c = 0; c < store.cols; c++) {
         nums.push({
-          x: ((c + 0.5) / store.cols) * 100,
-          y: ((r + 0.5) / store.rows) * 100,
+          x: ((c + xOff) / store.cols) * 100,
+          y: ((r + yOff) / store.rows) * 100,
           n: n++,
         });
       }
@@ -207,8 +221,8 @@
             <text
               x="{cell.x}%"
               y="{cell.y}%"
-              text-anchor="middle"
-              dominant-baseline="central"
+              text-anchor={numberLayout.anchor}
+              dominant-baseline={numberLayout.baseline}
               fill={store.numberColor}
               font-size="{store.numberSize}"
               font-family="var(--font-mono)"

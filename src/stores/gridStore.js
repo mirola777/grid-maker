@@ -1,38 +1,42 @@
 import { writable } from 'svelte/store';
 
+const DEFAULTS = {
+  // Image
+  imageSrc: null,
+  croppedSrc: null,
+
+  // Grid overlay
+  rows: 4,
+  cols: 4,
+  lineColor: '#000000',
+  lineOpacity: 0.6,
+  lineWidth: 0.8,
+  showNumbers: false,
+  numberColor: '#000000',
+  numberSize: 12,
+  numberPosition: 'center', // center, top-left, top-right, bottom-left, bottom-right
+
+  // Grid style
+  lineStyle: 'solid',
+  showDiagonals: false,
+  showCenter: false,
+
+  // Filter
+  filter: 'none',
+
+  // Export
+  exportScale: 2,
+  exportFormat: 'png',
+  exportQuality: 92,
+  exportGridOnly: false,
+  exportBgColor: '#ffffff',
+
+  // Mode
+  advancedMode: false,
+};
+
 function createGridStore() {
-  const { subscribe, set, update } = writable({
-    // Image
-    imageSrc: null,       // original uploaded image
-    croppedSrc: null,     // after crop (or same as original if no crop)
-
-    // Grid overlay
-    rows: 4,
-    cols: 4,
-    lineColor: '#ff3366',
-    lineOpacity: 0.7,
-    lineWidth: 1.5,
-    showNumbers: false,
-    numberColor: '#ff3366',
-    numberSize: 12,
-
-    // Grid style
-    lineStyle: 'solid',   // solid, dashed, dotted
-    showDiagonals: false,
-    showCenter: false,
-
-    // Filter
-    filter: 'none', // none, grayscale, sepia, scanner, highContrast, invert
-
-    // Export
-    exportScale: 2,
-    exportFormat: 'png',
-    exportQuality: 92,
-    exportGridOnly: false,
-
-    // Mode
-    advancedMode: false,
-  });
+  const { subscribe, set, update } = writable({ ...DEFAULTS });
 
   return {
     subscribe,
@@ -49,6 +53,14 @@ function createGridStore() {
 
     clearImage() {
       update(s => ({ ...s, imageSrc: null, croppedSrc: null }));
+    },
+
+    resetSettings() {
+      update(s => ({
+        ...DEFAULTS,
+        imageSrc: s.imageSrc,
+        croppedSrc: s.croppedSrc,
+      }));
     },
   };
 }

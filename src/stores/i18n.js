@@ -83,6 +83,21 @@ const translations = {
     // Language
     language: "Language",
 
+    // Number position
+    numberPosition: "Number position",
+    posCenter: "Center",
+    posTopLeft: "Top-L",
+    posTopRight: "Top-R",
+    posBottomLeft: "Bot-L",
+    posBottomRight: "Bot-R",
+
+    // Export extras
+    bgColor: "Background color",
+    jpegQuality: "JPEG Quality",
+
+    // Reset
+    resetAll: "Reset settings",
+
     // Footer
     madeWith: "Made with",
     by: "by",
@@ -159,6 +174,16 @@ const translations = {
 
     language: "Idioma",
 
+    numberPosition: "Posición del número",
+    posCenter: "Centro",
+    posTopLeft: "Arr-I",
+    posTopRight: "Arr-D",
+    posBottomLeft: "Abj-I",
+    posBottomRight: "Abj-D",
+    bgColor: "Color de fondo",
+    jpegQuality: "Calidad JPEG",
+    resetAll: "Resetear configuración",
+
     madeWith: "Hecho con",
     by: "por",
     footerDesc: "Herramienta gratuita de cuadrícula para dibujo",
@@ -234,6 +259,16 @@ const translations = {
 
     language: "Idioma",
 
+    numberPosition: "Posição do número",
+    posCenter: "Centro",
+    posTopLeft: "Sup-E",
+    posTopRight: "Sup-D",
+    posBottomLeft: "Inf-E",
+    posBottomRight: "Inf-D",
+    bgColor: "Cor de fundo",
+    jpegQuality: "Qualidade JPEG",
+    resetAll: "Resetar configurações",
+
     madeWith: "Feito com",
     by: "por",
     footerDesc: "Ferramenta gratuita de grade para desenho",
@@ -308,6 +343,16 @@ const translations = {
     cancelBtn: "Annuler",
 
     language: "Langue",
+
+    numberPosition: "Position du numéro",
+    posCenter: "Centre",
+    posTopLeft: "Haut-G",
+    posTopRight: "Haut-D",
+    posBottomLeft: "Bas-G",
+    posBottomRight: "Bas-D",
+    bgColor: "Couleur de fond",
+    jpegQuality: "Qualité JPEG",
+    resetAll: "Réinitialiser",
 
     madeWith: "Fait avec",
     by: "par",
