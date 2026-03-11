@@ -86,11 +86,37 @@
   async function handleExport(format) {
     if (!store.croppedSrc) return;
 
-    const img = new Image();
-    img.src = store.croppedSrc;
-    await new Promise((resolve) => { img.onload = resolve; });
+    // Snapshot ALL store values before async boundary
+    // ($derived may not track correctly after await in Svelte 5)
+    const s = {
+      croppedSrc: store.croppedSrc,
+      exportScale: store.exportScale,
+      exportGridOnly: store.exportGridOnly,
+      exportBgColor: store.exportBgColor,
+      exportQuality: store.exportQuality,
+      filter: store.filter,
+      lineColor: store.lineColor,
+      lineWidth: store.lineWidth,
+      lineOpacity: store.lineOpacity,
+      lineStyle: store.lineStyle,
+      rows: store.rows,
+      cols: store.cols,
+      showDiagonals: store.showDiagonals,
+      showCenter: store.showCenter,
+      showNumbers: store.showNumbers,
+      numberColor: store.numberColor,
+      numberSize: store.numberSize,
+      numberPosition: store.numberPosition,
+    };
 
-    const scale = store.exportScale;
+    const img = new Image();
+    img.src = s.croppedSrc;
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+    });
+
+    const scale = s.exportScale;
     const w = img.naturalWidth * scale;
     const h = img.naturalHeight * scale;
 
@@ -99,68 +125,95 @@
     canvas.height = h;
     const ctx = canvas.getContext('2d');
 
-    if (!store.exportGridOnly) {
-      // Apply filter if needed
-      const filterCSS = getFilterCSS(store.filter);
-      if (filterCSS) ctx.filter = filterCSS;
-      ctx.drawImage(img, 0, 0, w, h);
-      ctx.filter = 'none';
-    } else {
-      // Grid-only mode: fill with background color (or keep transparent for PNG)
-      if (format === 'jpeg' || store.exportBgColor !== '#ffffff') {
-        ctx.fillStyle = store.exportBgColor;
-        ctx.fillRect(0, 0, w, h);
-      }
+    // JPEG needs opaque background (transparent = black in JPEG)
+    if (format === 'jpeg') {
+      ctx.fillStyle = s.exportGridOnly ? s.exportBgColor : '#ffffff';
+      ctx.fillRect(0, 0, w, h);
     }
 
-    ctx.strokeStyle = store.lineColor;
-    ctx.lineWidth = store.lineWidth * scale;
-    ctx.globalAlpha = store.lineOpacity;
+    if (!s.exportGridOnly) {
+      // Draw image with optional filter
+      const filterCSS = getFilterCSS(s.filter);
+      if (filterCSS) {
+        ctx.save();
+        ctx.filter = filterCSS;
+        ctx.drawImage(img, 0, 0, w, h);
+        ctx.restore();
+      } else {
+        ctx.drawImage(img, 0, 0, w, h);
+      }
+    } else if (format === 'png' && s.exportBgColor !== 'transparent') {
+      // PNG grid-only with custom bg color
+      ctx.fillStyle = s.exportBgColor;
+      ctx.fillRect(0, 0, w, h);
+    }
 
-    if (store.lineStyle === 'dashed') ctx.setLineDash([8 * scale, 4 * scale]);
-    else if (store.lineStyle === 'dotted') ctx.setLineDash([2 * scale, 4 * scale]);
+    // --- Draw grid ---
+    ctx.save();
+    ctx.strokeStyle = s.lineColor;
+    ctx.lineWidth = s.lineWidth * scale;
+    ctx.globalAlpha = s.lineOpacity;
+
+    if (s.lineStyle === 'dashed') ctx.setLineDash([8 * scale, 4 * scale]);
+    else if (s.lineStyle === 'dotted') ctx.setLineDash([2 * scale, 4 * scale]);
     else ctx.setLineDash([]);
 
-    for (let i = 1; i < store.rows; i++) {
-      const y = (i / store.rows) * h;
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+    // Horizontal lines
+    for (let i = 1; i < s.rows; i++) {
+      const y = Math.round((i / s.rows) * h);
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
     }
-    for (let j = 1; j < store.cols; j++) {
-      const x = (j / store.cols) * w;
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+    // Vertical lines
+    for (let j = 1; j < s.cols; j++) {
+      const x = Math.round((j / s.cols) * w);
+      ctx.beginPath();
+      ctx.moveTo(x, 0);
+      ctx.lineTo(x, h);
+      ctx.stroke();
     }
 
+    // Border
     const half = ctx.lineWidth / 2;
     ctx.strokeRect(half, half, w - ctx.lineWidth, h - ctx.lineWidth);
 
-    if (store.showDiagonals) {
+    // Diagonals
+    if (s.showDiagonals) {
       ctx.beginPath();
       ctx.moveTo(0, 0); ctx.lineTo(w, h);
       ctx.moveTo(w, 0); ctx.lineTo(0, h);
       ctx.stroke();
     }
 
-    if (store.showCenter) {
+    // Center crosshair
+    if (s.showCenter) {
       ctx.setLineDash([]);
-      ctx.lineWidth = store.lineWidth * scale * 0.7;
+      ctx.lineWidth = s.lineWidth * scale * 0.7;
       ctx.beginPath();
       ctx.moveTo(w / 2, 0); ctx.lineTo(w / 2, h);
       ctx.moveTo(0, h / 2); ctx.lineTo(w, h / 2);
       ctx.stroke();
     }
 
-    if (store.showNumbers) {
+    ctx.restore();
+
+    // --- Draw numbers ---
+    if (s.showNumbers) {
+      ctx.save();
       ctx.globalAlpha = 0.85;
-      ctx.fillStyle = store.numberColor;
-      ctx.font = `600 ${store.numberSize * scale}px 'JetBrains Mono', monospace`;
-      ctx.strokeStyle = store.exportGridOnly ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.3)';
+      ctx.fillStyle = s.numberColor;
+      ctx.font = `600 ${s.numberSize * scale}px 'JetBrains Mono', monospace`;
+      ctx.strokeStyle = s.exportGridOnly ? 'rgba(255,255,255,0.8)' : 'rgba(0,0,0,0.3)';
       ctx.lineWidth = 3 * scale;
+      ctx.lineJoin = 'round';
 
       const pad = 0.08;
       let xOff = 0.5, yOff = 0.5;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      switch (store.numberPosition) {
+      switch (s.numberPosition) {
         case 'top-left': xOff = pad; yOff = pad; ctx.textAlign = 'left'; ctx.textBaseline = 'top'; break;
         case 'top-right': xOff = 1 - pad; yOff = pad; ctx.textAlign = 'right'; ctx.textBaseline = 'top'; break;
         case 'bottom-left': xOff = pad; yOff = 1 - pad; ctx.textAlign = 'left'; ctx.textBaseline = 'bottom'; break;
@@ -168,24 +221,33 @@
       }
 
       let n = 1;
-      for (let r = 0; r < store.rows; r++) {
-        for (let c = 0; c < store.cols; c++) {
-          const x = ((c + xOff) / store.cols) * w;
-          const y = ((r + yOff) / store.rows) * h;
+      for (let r = 0; r < s.rows; r++) {
+        for (let c = 0; c < s.cols; c++) {
+          const x = ((c + xOff) / s.cols) * w;
+          const y = ((r + yOff) / s.rows) * h;
           ctx.strokeText(String(n), x, y);
           ctx.fillText(String(n), x, y);
           n++;
         }
       }
+      ctx.restore();
     }
 
-    ctx.globalAlpha = 1;
+    // --- Export ---
     const mime = format === 'jpeg' ? 'image/jpeg' : 'image/png';
-    const quality = format === 'jpeg' ? store.exportQuality / 100 : undefined;
-    const link = document.createElement('a');
-    link.download = `mirolas-grid.${format}`;
-    link.href = canvas.toDataURL(mime, quality);
-    link.click();
+    const quality = format === 'jpeg' ? s.exportQuality / 100 : undefined;
+
+    canvas.toBlob((blob) => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.download = `mirolas-grid.${format}`;
+      link.href = url;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }, mime, quality);
   }
 </script>
 
