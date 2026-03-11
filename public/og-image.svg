@@ -1,0 +1,109 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0c0c11"/>
+      <stop offset="100%" stop-color="#1c1c25"/>
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#ef4444"/>
+    </linearGradient>
+    <linearGradient id="gridGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fb923c" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#f87171" stop-opacity="0.6"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bgGrad)"/>
+
+  <!-- Decorative grid in background -->
+  <g stroke="url(#gridGrad)" stroke-width="1" opacity="0.15">
+    <line x1="0" y1="105" x2="1200" y2="105"/>
+    <line x1="0" y1="210" x2="1200" y2="210"/>
+    <line x1="0" y1="315" x2="1200" y2="315"/>
+    <line x1="0" y1="420" x2="1200" y2="420"/>
+    <line x1="0" y1="525" x2="1200" y2="525"/>
+    <line x1="200" y1="0" x2="200" y2="630"/>
+    <line x1="400" y1="0" x2="400" y2="630"/>
+    <line x1="600" y1="0" x2="600" y2="630"/>
+    <line x1="800" y1="0" x2="800" y2="630"/>
+    <line x1="1000" y1="0" x2="1000" y2="630"/>
+  </g>
+
+  <!-- Logo icon -->
+  <g transform="translate(100, 180)">
+    <rect width="80" height="80" rx="18" fill="url(#accentGrad)"/>
+    <g stroke="white" stroke-width="3.5" stroke-linecap="round" opacity="0.9">
+      <line x1="30" y1="12" x2="30" y2="68"/>
+      <line x1="50" y1="12" x2="50" y2="68"/>
+      <line x1="12" y1="30" x2="68" y2="30"/>
+      <line x1="12" y1="50" x2="68" y2="50"/>
+    </g>
+    <rect x="10" y="10" width="60" height="60" rx="6" fill="none" stroke="white" stroke-width="3.5" opacity="0.85"/>
+  </g>
+
+  <!-- Title -->
+  <text x="200" y="220" font-family="'Space Grotesk', -apple-system, sans-serif" font-size="52" font-weight="700" fill="white">Grid Maker</text>
+  <text x="200" y="260" font-family="'Space Grotesk', -apple-system, sans-serif" font-size="22" fill="#9898b8">by Mirola</text>
+
+  <!-- Subtitle -->
+  <text x="100" y="340" font-family="'Space Grotesk', -apple-system, sans-serif" font-size="28" fill="#ededf5" font-weight="500">Cuadrícula sobre imágenes para dibujar</text>
+  <text x="100" y="380" font-family="'Space Grotesk', -apple-system, sans-serif" font-size="20" fill="#55557a">Drawing grid overlay tool &middot; Free &middot; No signup</text>
+
+  <!-- Feature pills -->
+  <g transform="translate(100, 420)">
+    <rect width="110" height="34" rx="17" fill="#1c1207" stroke="#f97316" stroke-width="1"/>
+    <text x="55" y="22" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="13" fill="#fb923c" font-weight="500">Crop</text>
+
+    <rect x="120" width="130" height="34" rx="17" fill="#1c1207" stroke="#f97316" stroke-width="1"/>
+    <text x="185" y="22" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="13" fill="#fb923c" font-weight="500">Custom Grid</text>
+
+    <rect x="260" width="100" height="34" rx="17" fill="#1c1207" stroke="#f97316" stroke-width="1"/>
+    <text x="310" y="22" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="13" fill="#fb923c" font-weight="500">Export</text>
+
+    <rect x="370" width="130" height="34" rx="17" fill="#1c1207" stroke="#f97316" stroke-width="1"/>
+    <text x="435" y="22" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="13" fill="#fb923c" font-weight="500">Dark Mode</text>
+
+    <rect x="510" width="90" height="34" rx="17" fill="#1c1207" stroke="#f97316" stroke-width="1"/>
+    <text x="555" y="22" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="13" fill="#fb923c" font-weight="500">Free</text>
+  </g>
+
+  <!-- Preview mockup on the right -->
+  <g transform="translate(720, 100)">
+    <!-- Image placeholder -->
+    <rect width="380" height="380" rx="16" fill="#1c1c25" stroke="#26263a" stroke-width="2"/>
+
+    <!-- Simulated photo area -->
+    <rect x="10" y="10" width="360" height="360" rx="10" fill="#2a2a38"/>
+
+    <!-- Mountain scene sketch -->
+    <polygon points="40,340 120,180 200,280 280,140 360,340" fill="none" stroke="#55557a" stroke-width="2" opacity="0.5"/>
+    <circle cx="300" cy="80" r="25" fill="none" stroke="#55557a" stroke-width="2" opacity="0.4"/>
+
+    <!-- Grid overlay -->
+    <g stroke="#ff3366" stroke-width="1.5" opacity="0.7">
+      <line x1="10" y1="100" x2="370" y2="100"/>
+      <line x1="10" y1="190" x2="370" y2="190"/>
+      <line x1="10" y1="280" x2="370" y2="280"/>
+      <line x1="130" y1="10" x2="130" y2="370"/>
+      <line x1="250" y1="10" x2="250" y2="370"/>
+    </g>
+    <rect x="10" y="10" width="360" height="360" rx="10" fill="none" stroke="#ff3366" stroke-width="1.5" opacity="0.7"/>
+
+    <!-- Cell numbers -->
+    <g font-family="'JetBrains Mono', monospace" font-size="16" fill="#ff3366" opacity="0.5" text-anchor="middle" dominant-baseline="central">
+      <text x="70" y="55">1</text>
+      <text x="190" y="55">2</text>
+      <text x="310" y="55">3</text>
+      <text x="70" y="145">4</text>
+      <text x="190" y="145">5</text>
+      <text x="310" y="145">6</text>
+    </g>
+  </g>
+
+  <!-- Bottom bar -->
+  <rect x="0" y="560" width="1200" height="70" fill="#0a0a0f"/>
+  <text x="100" y="600" font-family="'JetBrains Mono', monospace" font-size="14" fill="#55557a">gridmaker.mirola.dev</text>
+  <text x="1100" y="600" text-anchor="end" font-family="'Space Grotesk', sans-serif" font-size="14" fill="#55557a">100% Gratis &middot; Sin registro</text>
+</svg>

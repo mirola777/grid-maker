@@ -1,0 +1,29 @@
+{
+  "name": "Grid Maker - Cuadrícula para Dibujo",
+  "short_name": "Grid Maker",
+  "description": "Crea cuadrículas sobre imágenes para dibujar. Herramienta gratuita online.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0c0c11",
+  "theme_color": "#f97316",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "/favicon-32.png",
+      "sizes": "32x32",
+      "type": "image/png"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["design", "utilities", "art"],
+  "lang": "es",
+  "dir": "ltr"
+}
