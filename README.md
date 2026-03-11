@@ -54,7 +54,7 @@ Perfect for:
 
 ## Demo
 
-Visit **[gridmaker.mirola.dev](https://gridmaker.mirola.dev)** to try it live.
+Visit **[mirola-grid-maker.vercel.app](https://mirola-grid-maker.vercel.app)** to try it live.
 
 ## Tech Stack
 

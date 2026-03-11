@@ -104,6 +104,6 @@
 
   <!-- Bottom bar -->
   <rect x="0" y="560" width="1200" height="70" fill="#0a0a0f"/>
-  <text x="100" y="600" font-family="'JetBrains Mono', monospace" font-size="14" fill="#55557a">gridmaker.mirola.dev</text>
+  <text x="100" y="600" font-family="'JetBrains Mono', monospace" font-size="14" fill="#55557a">mirola-grid-maker.vercel.app</text>
   <text x="1100" y="600" text-anchor="end" font-family="'Space Grotesk', sans-serif" font-size="14" fill="#55557a">100% Gratis &middot; Sin registro</text>
 </svg>
